@@ -9,7 +9,7 @@
 ### Day 1
 - [phimai (WIP 🔨)](problem/phimai.md)
 - [bakshin (WIP 🔨)](problem/bakshin.md)
-- [elephant (WIP 🔨)](problem/elephant.md)
+- [elephant](problem/elephant.md)
 
 ### Day 2
 - [cat (WIP 🔨)](problem/cat.md)

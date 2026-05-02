@@ -128,12 +128,10 @@ for (int i = 1;i < n;i++) { // start from 1
 ```cpp
 vector<int> a(n, 0);
 int k = 0;
-// start from i = 0, idx = 0
 void recur(int i,int idx){
-    if(i == n-1){
-        // base case
+    if(i == n-1){  // base case
         /*
-            map 'K' to 'a' somehow (up to you)
+            map (k) to (a) somehow
         */
         k++;
         return;
@@ -147,19 +145,22 @@ void recur(int i,int idx){
     a[i+1] = idx+1;
     recur(i+1, idx+1)
 }
+...
+// start from i = 0, idx = 0
+recur(0, 0);
 ```
 
 ## Full Solution
 
-สังเกตว่าหากเราสามารถจำลองการสร้าง Recursion Tree ได้ไว ๆ เราก็จะสามารถ map `a` ไปเป็น $K$ และ map $K$ กลับมาหา `a` ได้
+สังเกตว่าหากเราสามารถจำลองการสร้าง Recursion Tree ได้ไว ๆ เราก็จะสามารถแปลง $a$ ไปเป็น $K$ และแปลง $K$ กลับมาหา $a$ ได้
 
 ### เดินบน Recursion Tree ให้ไวขึ้น
 
-หากเราสามารถรู้จำนวนวิธีที่เกิดขึ้นได้จาก child ของแต่ละโหนด Recursion Tree เราก็ไม่จำเป็นต้องเรียก Recursive Function ลงไปจริง ๆ แต่เราสามารถใช้จำนวนวิธี (จำนวน leaf) ใน subtree ของ child ตัวนั้น ๆ ในการประกอบการคำนวณค่า $K$ ได้เลย ทำให้สามารถ map `a` เป็น $K$ ได้ภายในเวลา $O(N)$ หรือ $O(N^2)$ 
+หากเราสามารถรู้จำนวนวิธีที่เกิดขึ้นได้จาก child ของแต่ละโหนด Recursion Tree เราก็ไม่จำเป็นต้องเรียก Recursive Function ลงไปจริง ๆ แต่เราสามารถใช้จำนวนวิธี (จำนวน leaf) ใน subtree ของ child ตัวนั้น ๆ ในการประกอบการคำนวณค่า $K$ ได้เลย ทำให้สามารถแปลง $a$ เป็น $K$ ได้ภายในเวลา $O(N)$ หรือ $O(N^2)$ 
 
 ![Walk On Tree](/media/elephant/walkonrecurtree.gif)
 
-เรายังสามารถใช้วิธีที่คล้าย ๆ กันในการ map $K$ กลับไปยัง `a` ได้อีกด้วย
+เรายังสามารถใช้วิธีที่คล้าย ๆ กันในการแปลง $K$ กลับไปยัง $a$ ได้อีกด้วย
 
 ![Walk On Tree](/media/elephant/walkonrecurtree2.gif)
 
@@ -175,7 +176,120 @@ Base Case
 - $dp[N-1][j] = 1$ สำหรับ $j = 0, 1, 2, \ldots, N-1$ 
 
 Recurrence 
-- $dp[i][j] = j \times dp[i+1][j] + dp[i+1][j+1]$ 
+- $dp[i][j] = (j+1) \times dp[i+1][j] + dp[i+1][j+1]$ 
 - สำหรับ $i = 0, 1, 2, \ldots, N-2$
 
- 🚧 *The following section is still under construction*  🚧
+ซึ่งในส่วนของ Recurrence เราจะมอง $(i, j)$ เป็นโหนดบน Recursion Tree ที่มี children ไล่จากซ้าบไปขวา ได้แก่
+
+- $(i+1,j)$ จำนวน $j+1$ โหนด
+- $(i+1,j+1)$ จำนวน $1$ โหนด
+
+โดยเราจะใช้ข้อมูลเหล่านี้ในการ map ค่า $K$ เข้ากับลำดับ $a$
+
+### แปลง $a$ เป็น $K$
+
+หลังจากคำนวณ $a$ และ $dp$ แล้ว เราจะไล่ตั้งแต่ $i = 0, 1, 2, \ldots, N-2$ โดยสำหรับแต่ละ $(i, j)$ เราจะแบ่งการเดินเป็น 2 กรณี ได้แก่
+
+1. เดินไป $(i+1,j)$ ซึ่งคือกรณีที่ `idx` มีค่าเท่าเดิม ตาม [Algorithm 1](#algorithm-1)
+2. เดินไป $(i+1,j+1)$ ซึ่งคือกรณีที่ `idx` มีค่าเพิ่มขึ้น 1 ตาม [Algorithm 1](#algorithm-1)
+
+โดยการคำนวณค่า $K$ ที่เพิ่มขึ้นมาในแต่ละ $i$ จะเท่ากับ $$a[i+1] \times dp[i+1][j]$$
+
+![Walk On Tree](/media/elephant/walkonrecurtree.gif)
+
+
+### แปลง $K$ กลับเป็น $a$
+
+หลังจากคำนวณ $dp$ แล้ว เราจะไล่ตั้งแต่ $i = 0, 1, 2, \ldots, N-2$ โดยสำหรับแต่ละ $i$ เราจะแบ่งการเดินเป็น 2 กรณี ได้แก่
+
+1. เดินไป $(i+1,j)$ ซึ่งคือกรณีที่ `idx` มีค่าเท่าเดิม ตาม [Algorithm 1](#algorithm-1)
+2. เดินไป $(i+1,j+1)$ ซึ่งคือกรณีที่ `idx` มีค่าเพิ่มขึ้น 1 ตาม [Algorithm 1](#algorithm-1)
+
+สำหรับแต่ละ $i$ เราจะใช้ค่า $K$ ในการตัดสินใจว่าค่า $a$ ตัวถัดไปจะอยู่ในกรณีใด อิงจากสูตรการคำนวณค่า $K$ สำหรับแต่ละ $i$
+
+1. หาก $K < (j+1) \times dp[i+1][j]$ หมายความว่าจะไม่มีการขึ้น `idx` ใหม่ใน $a[i+1]$ อย่างแน่นอน 
+2. ไม่เช่นนั้น จะได้ว่ามีการขึ้น `idx` ใหม่บน $a[i+1]$
+
+![Walk On Tree](/media/elephant/walkonrecurtree2.gif)
+
+โดยในการ Implement จริง เราจะดักกรณีที่ 2 ไว้ก่อน หรือก็คือตรวจสอบว่า $K \geq (j+1) \times dp[i+1][j]$ หรือไม่ก่อน แล้วจึงค่อยไปหา $a[i+1]$ สำหรับกรณีที่ 1
+
+## Implementation
+
+### Encode :
+
+```cpp
+long long encode(int N) {
+    int n = N;
+    vector<vector<long long>> dp(n + 1, vector<long long>(n + 1, 0ll));
+    for (int i = 0;i < n;i++) {
+        dp[n - 1][i] = 1;
+    }
+    for (int i = n - 2;i >= 0;i--) {
+        for (int j = 0;j <= i;j++) {
+            dp[i][j] = dp[i + 1][j] * (j + 1) + dp[i + 1][j + 1];
+        }
+    }
+    long long K = 0;
+    int idx = 0;
+    vector<int> a(n, 0);
+    for (int i = 1;i < n;i++) {
+        bool ch = 0;
+        for (int j = 0;j < i;j++) {
+            if (same_group(i, j)) {
+                a[i] = a[j];
+                ch = 1;
+                K += dp[i][idx] * a[i];
+                break;
+            }
+        }
+        if (!ch) {
+            a[i] = idx + 1;
+            K += dp[i][idx] * a[i];
+            idx++;
+        }
+    }
+    return K;
+}
+```
+
+Time Complexity : $O(N^2)$
+
+Space Complexity : $O(N^2)$
+
+
+### Decode :
+
+```cpp
+vector<int> decode(int N, long long K) {
+    int n = N;
+    vector<vector<long long>> dp(n + 1, vector<long long>(n + 1, 0ll));
+    for (int i = 0;i < n;i++) {
+        dp[n - 1][i] = 1;
+    }
+    for (int i = n - 2;i >= 0;i--) {
+        for (int j = 0;j <= i;j++) {
+            dp[i][j] = dp[i + 1][j] * (j + 1) + dp[i + 1][j + 1];
+        }
+    }
+    vector<int> a(n, 0);
+    int idx = 0;
+    for (int i = 0;i < n - 1;i++) {
+        if (K >= (idx + 1) * dp[i + 1][idx]) {
+            K -= (idx + 1) * dp[i + 1][idx];
+            a[i + 1] = ++idx;
+        }
+        else {
+            while (K >= dp[i + 1][idx]) {
+                K -= dp[i + 1][idx];
+                a[i + 1]++;
+            }
+        }
+    }
+    return a;
+}
+```
+
+Time Complexity : $O(N^2)$
+
+Space Complexity : $O(N^2)$
