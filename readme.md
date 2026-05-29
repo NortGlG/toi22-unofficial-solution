@@ -12,7 +12,7 @@
 - [elephant](problem/elephant.md)
 
 ### Day 2
-- [cat (WIP 🔨)](problem/cat.md)
+- [cat](problem/cat.md)
 - [market (WIP 🔨)](problem/market.md)
 - [hornbill (WIP 🔨)](problem/hornbill.md)
 
